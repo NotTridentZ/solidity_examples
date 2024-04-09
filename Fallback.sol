@@ -39,6 +39,10 @@ contract Fallback {
 
         emit log("fallback function", 0);
     }
+
+    function test(uint256 number) external{
+        emit log("test function", number);
+    }
 }
 
 contract FallbackPayable{
@@ -56,5 +60,28 @@ contract FallbackPayable{
         //if call 
 
         emit log("fallback function", 0);
+    }
+
+    function test(uint256 number) external{
+        emit log("test function", number);
+    }
+}
+
+contract Tester{
+    address public calledContract;
+    event log(string functionName, uint256 value);
+
+    constructor(address _calledContract){
+        calledContract = _calledContract;
+    }
+
+    function callFallbackContract(string memory functionName) external payable{
+        emit log("call Tester", 0);
+
+        (bool success, ) = calledContract.call{value: msg.value}(
+            abi.encodeWithSignature(functionName, 1)
+        );
+
+        require(success, "Call Fallback contract failed");
     }
 }
